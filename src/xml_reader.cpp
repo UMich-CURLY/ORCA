@@ -95,7 +95,7 @@ bool XMLReader::GetMap(Map **map) {
 		this->map = nullptr;
 		return true;
 	}
-
+	std::cout<< "Error! Map are not read\n";
 	return false;
 }
 
@@ -106,6 +106,7 @@ bool XMLReader::GetEnvironmentOptions(environment_options **envOpt) {
 		this->options = nullptr;
 		return true;
 	}
+	std::cout<< "Error! Environment options are not read\n";
 	return false;
 }
 
@@ -738,6 +739,7 @@ bool XMLReader::ReadAgents() {
 		}
 
 		/* Checking params */
+		// std::cout << "Radius is " << param.radius << std::endl;
 		if (stx <= param.radius || sty <= param.radius ||
 			gx <= param.radius || gy <= param.radius ||
 			stx >= (map->GetWidth() * map->GetCellSize()) - param.radius ||
@@ -779,41 +781,51 @@ bool XMLReader::ReadAgents() {
 		Agent *a;
 		if (agTypeStr == CNS_AT_ST_ORCA) {
 			a = new orca_agent(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+			std::cout<<"ORCA agent1\n" << a << std::endl;
 		}
 		else if (agTypeStr == CNS_AT_ST_ORCADD) {
 			a = new ORCADDAgent(id, Point(stx, sty), Point(gx, gy), *map, *options, param,
 								2 * (param.radius + param.rEps), 2 * (param.radius), stt);
+			std::cout<<"ORCADDAgent\n" << a << std::endl;
 		}
 		else if (agTypeStr == CNS_AT_ST_ORCAPAR) {
 			a = new agent_pnr(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+			std::cout<<"agent_pnr\n" << a << std::endl;
 		}
 		else if (agTypeStr == CNS_AT_ST_ORCAPARECBS) {
 			a = new ORCAAgentWithPARAndECBS(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+			std::cout<<"ORCAAgentWithPARAndECBS\n" << a << std::endl;
 		}
 		else if (agTypeStr == CNS_AT_ST_ORCARETURN) {
 			a = new ORCAAgentWithReturning(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+			std::cout<<"ORCAAgentWithReturning\n" << a << std::endl;
 		}
 		else {
 			a = new orca_agent(id, Point(stx, sty), Point(gx, gy), *map, *options, param);
+			std::cout<<"ORCA agent2\n" << a << std::endl;
 		}
-
+		
 		/* Set agent's planner */
 		// TODO Move plannertype from algorithm options to agent's parameters
 		switch (plannertype) {
 			case CN_SP_ST_THETA: {
 				a->SetPlanner(ThetaStar(*map, *options, Point(stx, sty), Point(gx, gy), param.radius + param.rEps));
+				std::cout<<"ThetaStar1\n" << a << std::endl;
 				break;
 			}
 			case CN_SP_ST_DIR: {
 				a->SetPlanner(DirectPlanner(*map, *options, Point(stx, sty), Point(gx, gy), param.radius + param.rEps));
+				std::cout<<"DirectPlanner\n" << a << std::endl;
 				break;
 			}
 			default: {
 				a->SetPlanner(ThetaStar(*map, *options, Point(stx, sty), Point(gx, gy), param.radius + param.rEps));
+				std::cout<<"ThetaStar2\n" << a << std::endl;
 				break;
 			}
 		}
 		allAgents->push_back(a);
+		
 	}
 	return true;
 }

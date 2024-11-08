@@ -1,0 +1,4 @@
+<root>
+    <agent id="0" start_i="12" start_j="16" goal_i="8" goal_j="0"/>
+    <agent id="1" start_i="10" start_j="10" goal_i="0" goal_j="26"/>
+</root>

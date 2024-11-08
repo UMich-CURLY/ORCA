@@ -448,7 +448,7 @@ void ORCADDAgent::ComputeWheelsSpeed() {
 	float l = (newV.X() - newV.Y() * divB) * invden;
 	float r = (newV.Y() - A2 * l) * (1 / B2);
 
-	if (isnan(l) or isnan(r)) // TODO refactoring
+	if (std::isnan(l) or std::isnan(r)) // TODO refactoring
 	{
 		tet += 0.0001;
 		sin0 = sin(tet);

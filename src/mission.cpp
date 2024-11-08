@@ -104,8 +104,12 @@ Mission::~Mission() {
 
 
 bool Mission::ReadTask() {
-	return taskReader->ReadData() && taskReader->GetMap(&map) && taskReader->GetAgents(agents, this->agentsNum) &&
-		   taskReader->GetEnvironmentOptions(&options);
+	bool a = taskReader->ReadData();
+	bool b = taskReader->GetMap(&map);
+	bool c = taskReader->GetAgents(agents, this->agentsNum);
+	bool d = taskReader->GetEnvironmentOptions(&options);
+	std::cout << "Read task\n" << a << b << c << d << this->agentsNum <<  std::endl;
+	return a && b && c && d;
 }
 
 
@@ -138,17 +142,19 @@ Summary Mission::StartMission() {
 	}
 	bool needToStop, needToStopByTime, needToStopBySteps, needToStopBySpeed;
 	do {
+		std::cout << "Step: " << stepsCount << std::endl;
 		AssignNeighbours();
-
+		std::cout << "Neighbours assigned\n";
 		for (auto &agent: agents) {
 			agent->UpdatePrefVelocity();
 		}
-
+		std::cout << "Pref velocity updated\n";
 		for (auto &agent: agents) {
 			agent->ComputeNewVelocity();
 		}
-
+		std::cout << "New velocity computed\n";
 		UpdateSate();
+		std::cout << "State updated\n";
 		auto checkpnt = std::chrono::high_resolution_clock::now();
 		size_t nowtime = std::chrono::duration_cast<std::chrono::milliseconds>(checkpnt - startpnt).count();
 
@@ -156,7 +162,7 @@ Summary Mission::StartMission() {
 		needToStopByTime = (isTimeBounded and nowtime >= timeTreshhold);
 		needToStopBySteps = (!isTimeBounded and stepsCount >= stepsTreshhold);
 		needToStop = needToStopBySpeed or needToStopByTime or needToStopBySteps;
-
+		std::cout << "Done with loop? " <<  IsFinished() << std::endl;
 	} while (!IsFinished() && !needToStop);
 
 	auto endpnt = std::chrono::high_resolution_clock::now();
@@ -181,6 +187,7 @@ Summary Mission::StartMission() {
 		collisionsCount += agent->GetCollision().first;
 		collisionsObstCount += agent->GetCollision().second;
 		auto tmpPARAgent = dynamic_cast<agent_pnr *> (agent);
+		std::cout << "tmpPARAgent: " << tmpPARAgent << std::endl;
 		if (tmpPARAgent != nullptr) {
 			auto statMAPF = tmpPARAgent->GetMAPFStatistics();
 			MAPFTime += statMAPF[CNS_MAPF_COMMON_TIME];
@@ -194,7 +201,7 @@ Summary Mission::StartMission() {
 		else {
 			auto tmpPARnECBSAgent = dynamic_cast<ORCAAgentWithPARAndECBS *> (agent);
 			if (tmpPARnECBSAgent != nullptr) {
-				//tmpPARnECBSAgent->PrintMAPFMemberStat();
+				tmpPARnECBSAgent->PrintMAPFMemberStat();
 				auto statMAPF = tmpPARnECBSAgent->GetMAPFStatistics();
 				MAPFTime += statMAPF[CNS_MAPF_COMMON_TIME];
 				initCount += static_cast<int>(statMAPF[CNS_MAPF_INIT_COUNT]);
@@ -304,6 +311,7 @@ bool Mission::IsFinished() {
 	for (auto &agent: agents) {
 		bool localres = agent->isFinished();
 		resultsLog[agent->GetID()].first = agent->isFinished() && resultsLog[agent->GetID()].first;
+		std::cout << "Agent: " << agent->GetID() << " " << agent->isFinished() << " " << resultsLog[agent->GetID()].first << std::endl;
 		if (localres && !resultsLog[agent->GetID()].first) {
 			resultsLog[agent->GetID()].first = true;
 			resultsLog[agent->GetID()].second = stepsCount;

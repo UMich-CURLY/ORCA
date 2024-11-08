@@ -6,7 +6,7 @@
 
 #include "mission.h"
 
-#define STEP_MAX            1000
+#define STEP_MAX            2000
 #define IS_TIME_BOUNDED     false
 #define STOP_BY_SPEED       true
 #define TIME_MAX            1000 * 60 * 1
@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
 
 
 	Mission task = Mission(taskfile, num, STEP_MAX, IS_TIME_BOUNDED, TIME_MAX, STOP_BY_SPEED);
+	// std::cout << "Task is ready\n" << task.ReadTask() << std::endl;
 	if (task.ReadTask()) {
 		auto summary = task.StartMission();
 		auto full_summary = summary.getFullSummary();
